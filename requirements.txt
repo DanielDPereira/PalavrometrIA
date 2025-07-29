@@ -1,0 +1,6 @@
+flask
+spacy
+textblob
+langdetect
+python-docx
+pymupdf
