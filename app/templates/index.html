@@ -1,10 +1,102 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>PalavrometrIA</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h1>Bem-vindo ao PalavrometrIA</h1>
+  <div class="container">
+    <h1>PalavrometrIA</h1>
+    <p class="subtitulo">Análise inteligente de textos e arquivos</p>
+
+    <form method="POST" enctype="multipart/form-data">
+      <textarea name="texto" placeholder="Digite ou cole o texto aqui...">{{ request.form.texto or '' }}</textarea>
+      <p class="ou">ou</p>
+      <input type="file" name="arquivo" accept=".txt,.pdf,.docx">
+      <button type="submit">Analisar</button>
+    </form>
+
+    {% if resultado %}
+      {% if resultado.erro %}
+        <div class="erro">{{ resultado.erro }}</div>
+      {% else %}
+        <h2>Palavras Mais Frequentes</h2>
+        <canvas id="freqPalavrasChart" width="600" height="400"></canvas>
+
+        <div class="resultados">
+
+          <h2>Idioma Detectado</h2>
+          <div class="box">
+            <p>{{ resultado.idioma }}</p>
+          </div>
+
+          <h2>Estatísticas do Texto</h2>
+          <div class="box">
+            <ul>
+              <li>Total de palavras: {{ resultado.estatisticas.total_palavras }}</li>
+              <li>Total de frases: {{ resultado.estatisticas.total_frases }}</li>
+              <li>Palavras únicas: {{ resultado.estatisticas.palavras_unicas }}</li>
+            </ul>
+          </div>
+
+          <h2>Palavras-chave Principais</h2>
+          <div class="box">
+            <p>{{ resultado.palavras_chave | join(', ') }}</p>
+          </div>
+
+          <h2>Contagem por Tipo de Palavra</h2>
+          <div class="box">
+            <ul>
+              {% for tipo, qtd in resultado.tipos_palavras.items() %}
+                <li>{{ tipo }}: {{ qtd }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <h2>Tempo Estimado de Leitura</h2>
+          <div class="box">
+            <p>{{ resultado.tempo_leitura }} minutos</p>
+          </div>
+
+          <h2>Grau de Legibilidade</h2>
+          <div class="box">
+            <p>{{ resultado.legibilidade }}</p>
+          </div>
+
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <script>
+    const ctx = document.getElementById('freqPalavrasChart')?.getContext('2d');
+    if (ctx) {
+      const labels = {{ resultado.freq_palavras | map(attribute=0) | list | tojson }};
+      const data = {{ resultado.freq_palavras | map(attribute=1) | list | tojson }};
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Frequência',
+            data: data,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              precision: 0
+            }
+          }
+        }
+      });
+    }
+  </script>
 </body>
 </html>
