@@ -5,13 +5,28 @@
   <title>PalavrometrIA</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .flex-row {
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .tipo-lista {
+      flex: 1 1 250px;
+    }
+    .tipo-grafico {
+      flex: 1 1 300px;
+      max-width: 400px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>PalavrometrIA</h1>
     <p class="subtitulo">Análise inteligente de textos e arquivos</p>
 
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" action="/" enctype="multipart/form-data">
       <textarea name="texto" placeholder="Digite ou cole o texto aqui...">{{ request.form.texto or '' }}</textarea>
       <p class="ou">ou</p>
       <input type="file" name="arquivo" accept=".txt,.pdf,.docx">
@@ -38,6 +53,8 @@
               <li>Total de palavras: {{ resultado.estatisticas.total_palavras }}</li>
               <li>Total de frases: {{ resultado.estatisticas.total_frases }}</li>
               <li>Palavras únicas: {{ resultado.estatisticas.palavras_unicas }}</li>
+              <li>Média de palavras por frase: {{ resultado.estatisticas.media_palavras_por_frase }}</li>
+              <li>Tamanho médio das palavras: {{ resultado.estatisticas.tamanho_medio_palavra }}</li>
             </ul>
           </div>
 
@@ -47,12 +64,17 @@
           </div>
 
           <h2>Contagem por Tipo de Palavra</h2>
-          <div class="box">
-            <ul>
-              {% for tipo, qtd in resultado.tipos_palavras.items() %}
-                <li>{{ tipo }}: {{ qtd }}</li>
-              {% endfor %}
-            </ul>
+          <div class="box flex-row">
+            <div class="tipo-lista">
+              <ul>
+                {% for tipo, qtd in resultado.tipos_palavras.items() %}
+                  <li>{{ tipo }}: {{ qtd }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="tipo-grafico">
+              <canvas id="tiposPalavrasChart" width="300" height="300"></canvas>
+            </div>
           </div>
 
           <h2>Tempo Estimado de Leitura</h2>
@@ -71,12 +93,15 @@
   </div>
 
   <script>
-    const ctx = document.getElementById('freqPalavrasChart')?.getContext('2d');
-    if (ctx) {
+    {% if resultado %}
+
+    // Gráfico de Frequência de Palavras
+    const freqCtx = document.getElementById('freqPalavrasChart')?.getContext('2d');
+    if (freqCtx) {
       const labels = {{ resultado.freq_palavras | map(attribute=0) | list | tojson }};
       const data = {{ resultado.freq_palavras | map(attribute=1) | list | tojson }};
 
-      new Chart(ctx, {
+      new Chart(freqCtx, {
         type: 'bar',
         data: {
           labels: labels,
@@ -97,6 +122,39 @@
         }
       });
     }
+
+    // Gráfico classes gramaticais - pizza
+    const tiposCtx = document.getElementById('tiposPalavrasChart')?.getContext('2d');
+    if (tiposCtx) {
+      const labelsTipos = {{ resultado.tipos_palavras.keys() | list | tojson }};
+      const dataTipos = {{ resultado.tipos_palavras.values() | list | tojson }};
+
+      new Chart(tiposCtx, {
+        type: 'pie',
+        data: {
+          labels: labelsTipos,
+          datasets: [{
+            data: dataTipos,
+            backgroundColor: [
+              '#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF',
+              '#FF9F40', '#8AFF33', '#33FFA8', '#FF3380', '#335BFF'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'right' },
+            title: {
+              display: true,
+              text: 'Contagem por Tipo de Palavra'
+            }
+          }
+        }
+      });
+    }
+
+    {% endif %}
   </script>
 </body>
 </html>
