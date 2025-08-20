@@ -1,0 +1,13 @@
+    .flex-row {
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .tipo-lista {
+      flex: 1 1 250px;
+    }
+    .tipo-grafico {
+      flex: 1 1 300px;
+      max-width: 400px;
+    }

@@ -4,22 +4,8 @@
   <meta charset="UTF-8" />
   <title>PalavrometrIA</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='chartjs.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    .flex-row {
-      display: flex;
-      gap: 30px;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-    .tipo-lista {
-      flex: 1 1 250px;
-    }
-    .tipo-grafico {
-      flex: 1 1 300px;
-      max-width: 400px;
-    }
-  </style>
 </head>
 <body>
   <div class="container">
