@@ -5,6 +5,11 @@ body {
   padding: 0;
 }
 
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
 .container {
   max-width: 850px;
   margin: 40px auto;
@@ -34,6 +39,7 @@ textarea {
   border-radius: 6px;
   font-size: 16px;
   resize: vertical;
+  box-sizing: border-box;
 }
 
 input[type="file"] {
@@ -83,4 +89,39 @@ button:hover {
   border-radius: 5px;
   margin-top: 20px;
   text-align: center;
+}
+
+.flex-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.tipo-lista {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+.tipo-grafico {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    padding: 20px;
+  }
+
+  .flex-row {
+    flex-direction: column;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  textarea {
+    height: 120px;
+  }
 }
