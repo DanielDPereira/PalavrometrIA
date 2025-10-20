@@ -1,8 +1,30 @@
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f4f4f9;
+/* --- Variáveis de Tema --- */
+:root {
+  --cor-primaria: #007bff;
+  --cor-primaria-hover: #0056b3;
+  --cor-fundo: #f8f9fa;
+  --cor-container: #ffffff;
+  --cor-texto: #333;
+  --cor-texto-secundario: #6c757d;
+  --cor-borda: #dee2e6;
+  --cor-sombra: rgba(0, 0, 0, 0.05);
+  --cor-erro: #dc3545;
+  --fonte-principal: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* --- Reset Básico --- */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- Estilos Globais --- */
+body {
+  font-family: var(--fonte-principal);
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  line-height: 1.6;
 }
 
 canvas {
@@ -10,118 +32,383 @@ canvas {
   height: auto !important;
 }
 
+/* --- Layout Principal --- */
 .container {
-  max-width: 850px;
-  margin: 40px auto;
-  background-color: #fff;
+  max-width: 960px;
+  margin: 30px auto;
   padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  background-color: var(--cor-container);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px var(--cor-sombra);
 }
 
-h1 {
+header {
   text-align: center;
-  color: #3f3f3f;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--cor-borda);
+  padding-bottom: 20px;
+}
+
+header h1 {
+  color: #222;
+  font-weight: 700;
+  font-size: 2.25rem;
+}
+
+header h1 .fa-pen-ruler {
+  color: var(--cor-primaria);
+  margin-right: 10px;
 }
 
 .subtitulo {
-  text-align: center;
-  color: #666;
-  margin-bottom: 30px;
+  color: var(--cor-texto-secundario);
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+/* --- Estilos do Formulário --- */
+form {
+  display: flex;
+  flex-direction: column;
 }
 
 textarea {
   width: 100%;
-  height: 150px;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 16px;
+  height: 160px;
+  padding: 15px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--fonte-principal);
   resize: vertical;
   box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+textarea:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.divisor {
+  text-align: center;
+  margin: 15px 0;
+  font-weight: 600;
+  color: var(--cor-texto-secundario);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.divisor::before,
+.divisor::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--cor-borda);
+}
+
+/* Estilo customizado para Input de Arquivo */
 input[type="file"] {
-  margin-top: 15px;
+  display: none; /* Esconde o input original */
 }
 
-.ou {
-  text-align: center;
-  margin: 10px 0;
-  font-weight: bold;
-  color: #555;
-}
-
-button {
-  display: block;
-  margin: 20px auto;
-  background-color: #007bff;
-  color: white;
-  padding: 12px 25px;
-  border: none;
+.file-label {
+  display: inline-block;
+  padding: 12px 20px;
+  background-color: #e9ecef;
+  color: #495057;
+  border: 1px solid var(--cor-borda);
   border-radius: 6px;
-  font-size: 16px;
   cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
-button:hover {
-  background-color: #0056b3;
+.file-label:hover {
+  background-color: #dee2e6;
+  border-color: #adb5bd;
 }
 
-.resultados {
-  margin-top: 30px;
+.file-label .fa-upload {
+  margin-right: 8px;
 }
 
-.box {
-  background-color: #eef3fb;
-  border: 1px solid #ccd9ea;
-  border-radius: 6px;
-  padding: 15px;
-  margin-bottom: 20px;
-  color: #2a2a2a;
+#file-name-display {
+  text-align: center;
+  font-style: italic;
+  color: var(--cor-texto-secundario);
+  margin-top: 5px;
+  height: 1.2em;
 }
 
-.erro {
+.btn-analisar {
+  display: block;
+  margin: 20px auto 0 auto;
+  background-color: var(--cor-primaria);
   color: white;
-  background-color: #ff4d4d;
-  padding: 15px;
-  border-radius: 5px;
-  margin-top: 20px;
+  padding: 14px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn-analisar:hover {
+  background-color: var(--cor-primaria-hover);
+  transform: translateY(-2px);
+}
+
+/* --- Feedback de Carregamento (Loader) --- */
+#loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: none; /* Escondido por padrão */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid var(--cor-primaria);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+#loader-overlay p {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- Layout dos Resultados --- */
+.resultados {
+  margin-top: 40px;
+}
+
+/* Card Base */
+.card {
+  background-color: var(--cor-container);
+  border: 1px solid var(--cor-borda);
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px var(--cor-sombra);
+  transition: box-shadow 0.3s;
+}
+
+.card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--cor-primaria);
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.card h2 i {
+  margin-right: 10px;
+  width: 20px;
   text-align: center;
 }
 
+.card.erro {
+  background-color: var(--cor-erro);
+  color: white;
+  border: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.card.erro h2 {
+  color: white;
+}
+
+/* Grid Responsivo para Cards */
+.resultados-grid {
+  display: grid;
+  /* Cria colunas flexíveis, com min de 260px e max de 1fr */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* Cards Específicos */
+.card-full {
+  grid-column: 1 / -1; /* Ocupa a linha inteira */
+}
+
+.card-small {
+  text-align: center;
+}
+
+.card-small h2 {
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--cor-texto-secundario);
+}
+
+.resultado-principal {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--cor-texto);
+  line-height: 1.2;
+}
+
+/* Lista de Estatísticas */
+.lista-estatisticas {
+  list-style: none;
+  padding: 0;
+}
+.lista-estatisticas li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.lista-estatisticas li:last-child {
+  border-bottom: none;
+}
+.lista-estatisticas li span {
+  color: var(--cor-texto-secundario);
+}
+
+/* Tags de Palavras-chave */
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tag {
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* --- Layout Gráfico de Pizza (Dentro do Card) --- */
 .flex-row {
   display: flex;
   gap: 20px;
-  align-items: flex-start;
+  align-items: center;
   flex-wrap: wrap;
 }
 
 .tipo-lista {
-  flex: 1 1 220px;
-  min-width: 180px;
+  flex: 1 1 150px;
+  min-width: 140px;
+}
+
+.tipo-lista ul {
+  list-style: none;
+}
+.tipo-lista li {
+  padding: 3px 0;
+  font-size: 0.95rem;
+}
+.tipo-lista li strong {
+  float: right;
 }
 
 .tipo-grafico {
-  flex: 1 1 220px;
-  min-width: 180px;
+  flex: 1 1 150px;
+  min-width: 150px;
+  max-width: 250px;
+  margin: 0 auto;
 }
 
-@media (max-width: 900px) {
+.chart-container {
+  position: relative;
+  height: 350px; /* Altura padrão para o gráfico de barras */
+}
+
+/* --- Footer --- */
+footer {
+  text-align: center;
+  margin-top: 30px;
+  padding: 20px;
+  color: var(--cor-texto-secundario);
+  font-size: 0.9rem;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
   .container {
+    margin: 20px auto;
     padding: 20px;
   }
 
+  header h1 {
+    font-size: 2rem;
+  }
+
+  .btn-analisar {
+    width: 100%;
+  }
+
+  /* Ajusta o layout do gráfico de pizza em telas pequenas */
   .flex-row {
     flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .tipo-grafico {
+    max-width: 100%;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    margin: 10px auto;
+    padding: 15px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  
+  header {
+    margin-bottom: 20px;
   }
 
-  h1 {
+  header h1 {
     font-size: 1.8rem;
   }
+  
+  .subtitulo {
+    font-size: 1rem;
+  }
 
-  textarea {
-    height: 120px;
+  .resultados-grid {
+    /* Força uma coluna em telas muito pequenas */
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-container {
+    height: 300px; /* Reduz altura do gráfico em mobile */
   }
 }

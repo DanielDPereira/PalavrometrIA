@@ -2,86 +2,142 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PalavrometrIA</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='chartjs.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>PalavrometrIA</h1>
-    <p class="subtitulo">Análise inteligente de textos e arquivos</p>
 
-    <form method="POST" action="/" enctype="multipart/form-data">
+  <div id="loader-overlay">
+    <div class="spinner"></div>
+    <p>Analisando...</p>
+  </div>
+
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-pen-ruler"></i> PalavrometrIA</h1>
+      <p class="subtitulo">Análise inteligente de textos e arquivos</p>
+    </header>
+
+    <form method="POST" action="/" enctype="multipart/form-data" id="analysis-form">
       <textarea name="texto" placeholder="Digite ou cole o texto aqui...">{{ request.form.texto or '' }}</textarea>
-      <p class="ou">ou</p>
-      <input type="file" name="arquivo" accept=".txt,.pdf,.docx">
-      <button type="submit">Analisar</button>
+      
+      <div class="divisor">
+        <span class="ou">ou</span>
+      </div>
+
+      <label for="arquivo-input" class="file-label">
+        <i class="fas fa-upload"></i>
+        <span>Escolher arquivo (.txt, .pdf, .docx)</span>
+      </label>
+      <input type="file" name="arquivo" id="arquivo-input" accept=".txt,.pdf,.docx">
+      <span id="file-name-display"></span>
+
+      <button type="submit" class="btn-analisar">Analisar</button>
     </form>
 
     {% if resultado %}
       {% if resultado.erro %}
-        <div class="erro">{{ resultado.erro }}</div>
+        <div class="card erro">
+          <i class="fas fa-exclamation-triangle"></i> {{ resultado.erro }}
+        </div>
       {% else %}
-        <h2>Palavras Mais Frequentes</h2>
-        <canvas id="freqPalavrasChart" width="600" height="400"></canvas>
-
         <div class="resultados">
 
-          <h2>Idioma Detectado</h2>
-          <div class="box">
-            <p>{{ resultado.idioma }}</p>
+          <div class="card card-full">
+            <h2><i class="fas fa-chart-bar"></i> Palavras Mais Frequentes</h2>
+            <div class="chart-container">
+              <canvas id="freqPalavrasChart"></canvas>
+            </div>
           </div>
 
-          <h2>Estatísticas do Texto</h2>
-          <div class="box">
-            <ul>
-              <li>Total de palavras: {{ resultado.estatisticas.total_palavras }}</li>
-              <li>Total de frases: {{ resultado.estatisticas.total_frases }}</li>
-              <li>Palavras únicas: {{ resultado.estatisticas.palavras_unicas }}</li>
-              <li>Média de palavras por frase: {{ resultado.estatisticas.media_palavras_por_frase }}</li>
-              <li>Tamanho médio das palavras: {{ resultado.estatisticas.tamanho_medio_palavra }}</li>
-            </ul>
-          </div>
+          <div class="resultados-grid">
 
-          <h2>Palavras-chave Principais</h2>
-          <div class="box">
-            <p>{{ resultado.palavras_chave | join(', ') }}</p>
-          </div>
+            <div class="card card-small">
+              <h2><i class="fas fa-language"></i> Idioma</h2>
+              <p class="resultado-principal">{{ resultado.idioma }}</p>
+            </div>
 
-          <h2>Contagem por Tipo de Palavra</h2>
-          <div class="box flex-row">
-            <div class="tipo-lista">
-              <ul>
-                {% for tipo, qtd in resultado.tipos_palavras.items() %}
-                  <li>{{ tipo }}: {{ qtd }}</li>
-                {% endfor %}
+            <div class="card card-small">
+              <h2><i class="fas fa-clock"></i> Tempo de Leitura</h2>
+              <p class="resultado-principal">{{ resultado.tempo_leitura }} min</p>
+            </div>
+
+            <div class="card card-small">
+              <h2><i class="fas fa-eye"></i> Legibilidade</h2>
+              <p class="resultado-principal">{{ resultado.legibilidade }}</p>
+            </div>
+
+            <div class="card">
+              <h2><i class="fas fa-calculator"></i> Estatísticas do Texto</h2>
+              <ul class="lista-estatisticas">
+                <li><span>Total de palavras:</span> <strong>{{ resultado.estatisticas.total_palavras }}</strong></li>
+                <li><span>Total de frases:</span> <strong>{{ resultado.estatisticas.total_frases }}</strong></li>
+                <li><span>Palavras únicas:</span> <strong>{{ resultado.estatisticas.palavras_unicas }}</strong></li>
+                <li><span>Média de palavras/frase:</span> <strong>{{ resultado.estatisticas.media_palavras_por_frase }}</strong></li>
+                <li><span>Tamanho médio/palavra:</span> <strong>{{ resultado.estatisticas.tamanho_medio_palavra }}</strong></li>
               </ul>
             </div>
-            <div class="tipo-grafico">
-              <canvas id="tiposPalavrasChart" width="300" height="300"></canvas>
+
+            <div class="card">
+              <h2><i class="fas fa-key"></i> Palavras-chave Principais</h2>
+              <div class="tags-container">
+                {% for palavra in resultado.palavras_chave %}
+                  <span class="tag">{{ palavra }}</span>
+                {% endfor %}
+              </div>
             </div>
-          </div>
 
-          <h2>Tempo Estimado de Leitura</h2>
-          <div class="box">
-            <p>{{ resultado.tempo_leitura }} minutos</p>
-          </div>
+            <div class="card">
+              <h2><i class="fas fa-sitemap"></i> Contagem por Tipo de Palavra</h2>
+              <div class="flex-row">
+                <div class="tipo-lista">
+                  <ul>
+                    {% for tipo, qtd in resultado.tipos_palavras.items() %}
+                      <li>{{ tipo }}: <strong>{{ qtd }}</strong></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                <div class="tipo-grafico">
+                  <canvas id="tiposPalavrasChart"></canvas>
+                </div>
+              </div>
+            </div>
 
-          <h2>Grau de Legibilidade</h2>
-          <div class="box">
-            <p>{{ resultado.legibilidade }}</p>
           </div>
-
         </div>
       {% endif %}
     {% endif %}
   </div>
 
-  <script>
-    {% if resultado %}
+  <footer>
+    <p>PalavrometrIA &copy; 2025</p>
+  </footer>
 
-    // Gráfico de Frequência de Palavras
+  <script>
+    // --- Script para Feedback de UI (Spinner e Nome do Arquivo) ---
+    document.getElementById('analysis-form').addEventListener('submit', function() {
+      document.getElementById('loader-overlay').style.display = 'flex';
+    });
+
+    document.getElementById('arquivo-input').addEventListener('change', function(e) {
+      const fileName = e.target.files[0] ? e.target.files[0].name : '';
+      document.getElementById('file-name-display').textContent = fileName;
+    });
+
+
+    // --- Script dos Gráficos (Mesma lógica de antes) ---
+    {% if resultado and not resultado.erro %}
+
+    // Gráfico de Frequência de Palavras (Barra)
     const freqCtx = document.getElementById('freqPalavrasChart')?.getContext('2d');
     if (freqCtx) {
       const labels = {{ resultado.freq_palavras | map(attribute=0) | list | tojson }};
@@ -94,29 +150,40 @@
           datasets: [{
             label: 'Frequência',
             data: data,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1,
+            borderRadius: 4
           }]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           scales: {
             y: {
               beginAtZero: true,
-              precision: 0
+              ticks: {
+                precision: 0
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
             }
           }
         }
       });
     }
 
-    // Gráfico classes gramaticais - pizza
+    // Gráfico classes gramaticais (Pizza)
     const tiposCtx = document.getElementById('tiposPalavrasChart')?.getContext('2d');
     if (tiposCtx) {
       const labelsTipos = {{ resultado.tipos_palavras.keys() | list | tojson }};
       const dataTipos = {{ resultado.tipos_palavras.values() | list | tojson }};
 
       new Chart(tiposCtx, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
           labels: labelsTipos,
           datasets: [{
@@ -124,17 +191,21 @@
             backgroundColor: [
               '#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF',
               '#FF9F40', '#8AFF33', '#33FFA8', '#FF3380', '#335BFF'
-            ]
+            ],
+            hoverOffset: 4
           }]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
-            legend: { position: 'right' },
-            title: {
-              display: true,
-              text: 'Contagem por Tipo de Palavra'
-            }
+            legend: { 
+              position: 'right',
+              labels: {
+                boxWidth: 12,
+                font: { size: 12 }
+              }
+            },
           }
         }
       });
