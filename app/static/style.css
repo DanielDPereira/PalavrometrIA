@@ -2,15 +2,45 @@
 :root {
   --cor-primaria: #007bff;
   --cor-primaria-hover: #0056b3;
+  
+  /* Cores Claras (Light Mode) */
   --cor-fundo: #f8f9fa;
   --cor-container: #ffffff;
   --cor-texto: #333;
   --cor-texto-secundario: #6c757d;
+  --cor-texto-header: #222;
   --cor-borda: #dee2e6;
+  --cor-borda-lista: #f0f0f0;
   --cor-sombra: rgba(0, 0, 0, 0.05);
+  --cor-input-fundo: #e9ecef;
+  --cor-input-fundo-hover: #dee2e6;
+  --cor-input-texto: #495057;
+  --cor-input-borda-hover: #adb5bd;
+  --cor-loader-overlay: rgba(255, 255, 255, 0.8);
+  --cor-spinner-fundo: #f3f3f3;
+  
   --cor-erro: #dc3545;
   --fonte-principal: 'Inter', 'Segoe UI', sans-serif;
 }
+
+/* Cores Escuras (Dark Mode) */
+html.dark-mode {
+  --cor-fundo: #121212;
+  --cor-container: #1e1e1e;
+  --cor-texto: #e0e0e0;
+  --cor-texto-secundario: #a0a0a0;
+  --cor-texto-header: #f0f0f0;
+  --cor-borda: #444;
+  --cor-borda-lista: #333;
+  --cor-sombra: rgba(255, 255, 255, 0.05);
+  --cor-input-fundo: #333;
+  --cor-input-fundo-hover: #444;
+  --cor-input-texto: #e0e0e0;
+  --cor-input-borda-hover: #555;
+  --cor-loader-overlay: rgba(0, 0, 0, 0.7);
+  --cor-spinner-fundo: #444;
+}
+
 
 /* --- Reset Básico --- */
 * {
@@ -25,6 +55,7 @@ body {
   background-color: var(--cor-fundo);
   color: var(--cor-texto);
   line-height: 1.6;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 canvas {
@@ -40,6 +71,8 @@ canvas {
   background-color: var(--cor-container);
   border-radius: 12px;
   box-shadow: 0 8px 30px var(--cor-sombra);
+  position: relative; /* Adicionado para posicionar o botão de tema */
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
 header {
@@ -47,12 +80,14 @@ header {
   margin-bottom: 30px;
   border-bottom: 1px solid var(--cor-borda);
   padding-bottom: 20px;
+  transition: border-color 0.2s;
 }
 
 header h1 {
-  color: #222;
+  color: var(--cor-texto-header);
   font-weight: 700;
   font-size: 2.25rem;
+  transition: color 0.2s;
 }
 
 header h1 .fa-pen-ruler {
@@ -64,6 +99,7 @@ header h1 .fa-pen-ruler {
   color: var(--cor-texto-secundario);
   font-size: 1.1rem;
   font-weight: 400;
+  transition: color 0.2s;
 }
 
 /* --- Estilos do Formulário --- */
@@ -82,7 +118,9 @@ textarea {
   font-family: var(--fonte-principal);
   resize: vertical;
   box-sizing: border-box;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: var(--cor-container);
+  color: var(--cor-texto);
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s;
 }
 
 textarea:focus {
@@ -99,6 +137,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 15px;
+  transition: color 0.2s;
 }
 
 .divisor::before,
@@ -107,6 +146,7 @@ textarea:focus {
   flex: 1;
   height: 1px;
   background-color: var(--cor-borda);
+  transition: background-color 0.2s;
 }
 
 /* Estilo customizado para Input de Arquivo */
@@ -117,20 +157,20 @@ input[type="file"] {
 .file-label {
   display: inline-block;
   padding: 12px 20px;
-  background-color: #e9ecef;
-  color: #495057;
+  background-color: var(--cor-input-fundo);
+  color: var(--cor-input-texto);
   border: 1px solid var(--cor-borda);
   border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
   text-align: center;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .file-label:hover {
-  background-color: #dee2e6;
-  border-color: #adb5bd;
+  background-color: var(--cor-input-fundo-hover);
+  border-color: var(--cor-input-borda-hover);
 }
 
 .file-label .fa-upload {
@@ -171,29 +211,32 @@ input[type="file"] {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--cor-loader-overlay);
   display: none; /* Escondido por padrão */
   justify-content: center;
   align-items: center;
   flex-direction: column;
   z-index: 1000;
   backdrop-filter: blur(4px);
+  transition: background-color 0.2s;
 }
 
 .spinner {
   width: 50px;
   height: 50px;
-  border: 5px solid #f3f3f3;
+  border: 5px solid var(--cor-spinner-fundo);
   border-top: 5px solid var(--cor-primaria);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 15px;
+  transition: border-color 0.2s;
 }
 
 #loader-overlay p {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--cor-texto);
+  transition: color 0.2s;
 }
 
 @keyframes spin {
@@ -214,11 +257,15 @@ input[type="file"] {
   padding: 25px;
   margin-bottom: 20px;
   box-shadow: 0 4px 12px var(--cor-sombra);
-  transition: box-shadow 0.3s;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.3s;
 }
 
 .card:hover {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+html.dark-mode .card:hover {
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.08);
 }
 
 .card h2 {
@@ -269,6 +316,7 @@ input[type="file"] {
   justify-content: center;
   font-size: 1.1rem;
   color: var(--cor-texto-secundario);
+  transition: color 0.2s;
 }
 
 .resultado-principal {
@@ -276,6 +324,7 @@ input[type="file"] {
   font-weight: 700;
   color: var(--cor-texto);
   line-height: 1.2;
+  transition: color 0.2s;
 }
 
 /* Lista de Estatísticas */
@@ -287,13 +336,15 @@ input[type="file"] {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--cor-borda-lista);
+  transition: border-color 0.2s;
 }
 .lista-estatisticas li:last-child {
   border-bottom: none;
 }
 .lista-estatisticas li span {
   color: var(--cor-texto-secundario);
+  transition: color 0.2s;
 }
 
 /* Tags de Palavras-chave */
@@ -303,12 +354,13 @@ input[type="file"] {
   gap: 8px;
 }
 .tag {
-  background-color: #e9ecef;
-  color: #495057;
+  background-color: var(--cor-input-fundo);
+  color: var(--cor-input-texto);
   padding: 5px 12px;
   border-radius: 20px;
   font-size: 0.9rem;
   font-weight: 600;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 /* --- Layout Gráfico de Pizza (Dentro do Card) --- */
@@ -347,6 +399,44 @@ input[type="file"] {
   height: 350px; /* Altura padrão para o gráfico de barras */
 }
 
+/* --- Botão Modo Escuro --- */
+.theme-toggle-btn {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: var(--cor-input-fundo);
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto-secundario);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--cor-input-fundo-hover);
+  color: var(--cor-texto);
+}
+
+.theme-toggle-btn .fa-sun {
+  display: none; /* Oculto por padrão */
+}
+
+html.dark-mode .theme-toggle-btn .fa-sun {
+  display: inline-block; /* Mostra sol no modo escuro */
+}
+
+html.dark-mode .theme-toggle-btn .fa-moon {
+  display: none; /* Esconde lua no modo escuro */
+}
+
+
 /* --- Footer --- */
 footer {
   text-align: center;
@@ -369,6 +459,11 @@ footer {
 
   .btn-analisar {
     width: 100%;
+  }
+  
+  .theme-toggle-btn {
+    top: 20px;
+    right: 20px;
   }
 
   /* Ajusta o layout do gráfico de pizza em telas pequenas */
@@ -410,5 +505,10 @@ footer {
   
   .chart-container {
     height: 300px; /* Reduz altura do gráfico em mobile */
+  }
+  
+  .theme-toggle-btn {
+    top: 15px;
+    right: 15px;
   }
 }

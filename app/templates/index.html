@@ -13,6 +13,21 @@
   
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark-mode');
+        } else if (theme === 'light') {
+           document.documentElement.classList.remove('dark-mode');
+        }
+      } catch (e) {
+        console.warn('LocalStorage indisponível para salvar tema.');
+      }
+    })();
+  </script>
 </head>
 <body>
 
@@ -23,6 +38,11 @@
 
   <div class="container">
     <header>
+      <button id="theme-toggle" class="theme-toggle-btn" aria-label="Alternar modo claro/escuro">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+      </button>
+      
       <h1><i class="fas fa-pen-ruler"></i> PalavrometrIA</h1>
       <p class="subtitulo">Análise inteligente de textos e arquivos</p>
     </header>
@@ -122,96 +142,22 @@
     <p>PalavrometrIA &copy; 2025</p>
   </footer>
 
-  <script>
-    // --- Script para Feedback de UI (Spinner e Nome do Arquivo) ---
-    document.getElementById('analysis-form').addEventListener('submit', function() {
-      document.getElementById('loader-overlay').style.display = 'flex';
-    });
-
-    document.getElementById('arquivo-input').addEventListener('change', function(e) {
-      const fileName = e.target.files[0] ? e.target.files[0].name : '';
-      document.getElementById('file-name-display').textContent = fileName;
-    });
-
-
-    // --- Script dos Gráficos (Mesma lógica de antes) ---
-    {% if resultado and not resultado.erro %}
-
-    // Gráfico de Frequência de Palavras (Barra)
-    const freqCtx = document.getElementById('freqPalavrasChart')?.getContext('2d');
-    if (freqCtx) {
-      const labels = {{ resultado.freq_palavras | map(attribute=0) | list | tojson }};
-      const data = {{ resultado.freq_palavras | map(attribute=1) | list | tojson }};
-
-      new Chart(freqCtx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Frequência',
-            data: data,
-            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1,
-            borderRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                precision: 0
-              }
-            }
-          },
-          plugins: {
-            legend: {
-              display: false
-            }
-          }
-        }
-      });
-    }
-
-    // Gráfico classes gramaticais (Pizza)
-    const tiposCtx = document.getElementById('tiposPalavrasChart')?.getContext('2d');
-    if (tiposCtx) {
-      const labelsTipos = {{ resultado.tipos_palavras.keys() | list | tojson }};
-      const dataTipos = {{ resultado.tipos_palavras.values() | list | tojson }};
-
-      new Chart(tiposCtx, {
-        type: 'doughnut',
-        data: {
-          labels: labelsTipos,
-          datasets: [{
-            data: dataTipos,
-            backgroundColor: [
-              '#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF',
-              '#FF9F40', '#8AFF33', '#33FFA8', '#FF3380', '#335BFF'
-            ],
-            hoverOffset: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { 
-              position: 'right',
-              labels: {
-                boxWidth: 12,
-                font: { size: 12 }
-              }
-            },
-          }
-        }
-      });
-    }
-
-    {% endif %}
+  {% if resultado and not resultado.erro %}
+  <script id="chart-data" type="application/json">
+    {{ 
+      {
+        "freq_labels": resultado.freq_palavras | map(attribute=0) | list,
+        "freq_data": resultado.freq_palavras | map(attribute=1) | list,
+        "tipos_labels": resultado.tipos_palavras.keys() | list,
+        "tipos_data": resultado.tipos_palavras.values() | list
+      } | tojson 
+    }}
   </script>
+  {% endif %}
+
+  <script src="{{ url_for('static', filename='uiHandler.js') }}"></script>
+  <script src="{{ url_for('static', filename='themeHandler.js') }}"></script>
+  <script src="{{ url_for('static', filename='chartsHandler.js') }}"></script>
+
 </body>
 </html>
