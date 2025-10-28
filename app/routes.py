@@ -101,7 +101,7 @@ def contagem_tipos_palavras(doc):
         tipos_traduzidos[nome] = v
     return tipos_traduzidos
 
-def tempo_leitura(total_palavras, wpm=200):
+def tempo_leitura(total_palavras, wpm=130):
     minutos = total_palavras / wpm
     return round(minutos, 2)
 
