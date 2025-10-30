@@ -71,6 +71,10 @@
         </div>
       {% else %}
         <div class="resultados">
+          
+          <a href="{{ url_for('main.exportar_pdf') }}" class="btn-exportar" target="_blank">
+            <i class="fas fa-file-pdf"></i> Exportar Relatório em PDF
+          </a>
 
           <div class="card card-full">
             <h2><i class="fas fa-chart-bar"></i> Palavras Mais Frequentes</h2>
@@ -158,6 +162,6 @@
   <script src="{{ url_for('static', filename='uiHandler.js') }}"></script>
   <script src="{{ url_for('static', filename='themeHandler.js') }}"></script>
   <script src="{{ url_for('static', filename='chartsHandler.js') }}"></script>
-
-</body>
+  
+  </body>
 </html>

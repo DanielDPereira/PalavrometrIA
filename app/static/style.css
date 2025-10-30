@@ -512,3 +512,30 @@ footer {
     right: 15px;
   }
 }
+
+.btn-exportar {
+  display: block;
+  width: fit-content; /* Para não ocupar a largura toda */
+  margin: 0 auto 30px auto; /* Centralizado, com margem abaixo */
+  background-color: var(--cor-input-fundo);
+  color: var(--cor-input-texto);
+  border: 1px solid var(--cor-borda);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s, border-color 0.2s;
+  text-decoration: none; /* Importante para tags <a> */
+}
+
+.btn-exportar:hover {
+  background-color: var(--cor-input-fundo-hover);
+  border-color: var(--cor-input-borda-hover);
+  transform: translateY(-2px);
+  color: var(--cor-input-texto); /* Garante que a cor do texto não mude no hover */
+}
+
+.btn-exportar .fa-file-pdf {
+  margin-right: 8px;
+}
