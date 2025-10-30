@@ -11,24 +11,12 @@
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='js/themeInitializer.js') }}"></script>
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
-  <script>
-    (function() {
-      try {
-        const theme = localStorage.getItem('theme');
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark-mode');
-        } else if (theme === 'light') {
-           document.documentElement.classList.remove('dark-mode');
-        }
-      } catch (e) {
-        console.warn('LocalStorage indisponível para salvar tema.');
-      }
-    })();
-  </script>
-</head>
+  </head>
 <body>
 
   <div id="loader-overlay">
@@ -165,9 +153,9 @@
   </script>
   {% endif %}
 
-  <script src="{{ url_for('static', filename='uiHandler.js') }}"></script>
-  <script src="{{ url_for('static', filename='themeHandler.js') }}"></script>
-  <script src="{{ url_for('static', filename='chartsHandler.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/uiHandler.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/themeHandler.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/chartsHandler.js') }}"></script>
   
 </body>
 </html>
