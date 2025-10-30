@@ -1,7 +1,7 @@
 import spacy
 from langdetect import detect
 from collections import Counter
-from .utils import POS_MAP # Importa o mapa de POS do utils
+from .utils import POS_MAP, NER_MAP # Importa o novo mapa NER_MAP
 
 # Carrega os modelos de linguagem
 MODELOS = {
@@ -71,6 +71,25 @@ def contagem_tipos_palavras(doc):
         tipos_traduzidos[nome] = v
     return tipos_traduzidos
 
+# --- NOVA FUNÇÃO ---
+def extrair_entidades(doc):
+    """Extrai e agrupa as Entidades Nomeadas (NER) do texto."""
+    entidades_agrupadas = {}
+    
+    # Usamos setdefault para criar a lista se a chave (tipo) ainda não existir
+    # Usamos um set() para garantir que entidades idênticas não se repitam
+    for ent in doc.ents:
+        tipo = NER_MAP.get(ent.label_, ent.label_) # Traduz o rótulo
+        texto = ent.text.strip()
+        if texto:
+             entidades_agrupadas.setdefault(tipo, set()).add(texto)
+    
+    # Converte os sets de volta para listas ordenadas para o JSON
+    resultado_final = {tipo: sorted(list(textos)) for tipo, textos in entidades_agrupadas.items()}
+    
+    # Retorna None se nenhum item foi encontrado, para facilitar no Jinja2
+    return resultado_final if resultado_final else None
+
 def tempo_leitura(total_palavras, wpm=130):
     """Calcula o tempo de leitura."""
     minutos = total_palavras / wpm
@@ -114,6 +133,7 @@ def analisar_texto_completo(texto):
         "palavras_chave": extrair_palavras_chave(doc, top_n=7),
         "freq_palavras": frequencia_palavras(doc, top_n=10),
         "tipos_palavras": contagem_tipos_palavras(doc),
+        "entidades": extrair_entidades(doc), # <-- NOVA LINHA
         "tempo_leitura": tempo_leitura(total_palavras_alpha),
         "legibilidade": grau_legibilidade(texto),
         # Salva apenas um trecho do texto

@@ -374,6 +374,23 @@ html.dark-mode .card:hover {
   transition: background-color 0.2s, color 0.2s;
 }
 
+/* --- NOVOS ESTILOS PARA ENTIDADES (NER) --- */
+.lista-entidades {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espaço entre cada grupo (PER, LOC, etc) */
+}
+
+.grupo-entidade strong {
+  color: var(--cor-texto-secundario);
+  font-size: 0.95rem;
+  display: block;
+  margin-bottom: 8px; /* Espaço entre o título (ex: Pessoa:) e as tags */
+  transition: color 0.2s;
+}
+/* --- FIM DOS NOVOS ESTILOS --- */
+
+
 /* --- Layout Gráfico de Pizza (Dentro do Card) --- */
 .flex-row {
   display: flex;

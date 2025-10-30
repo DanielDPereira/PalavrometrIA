@@ -26,6 +26,22 @@ POS_MAP = {
     "_": "Desconhecido"
 }
 
+# NOVO MAPA PARA TRADUÇÃO DE ENTIDADES (NER)
+NER_MAP = {
+    "PER": "Pessoa",
+    "LOC": "Local",
+    "ORG": "Organização",
+    "DATE": "Data",
+    "TIME": "Tempo",
+    "MONEY": "Dinheiro",
+    "PRODUCT": "Produto",
+    "EVENT": "Evento",
+    "LAW": "Lei",
+    "LANGUAGE": "Idioma",
+    "MISC": "Outros" # "Miscellaneous" ou Diversos
+}
+
+
 def allowed_file(filename):
     """Verifica se a extensão do arquivo é permitida."""
     return '.' in filename and \

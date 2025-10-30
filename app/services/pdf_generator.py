@@ -82,7 +82,25 @@ def criar_relatorio_pdf(resultado):
             pdf.cell(30, 6, str(freq), 1, 1, 'C')
         pdf.ln(5)
         
-        # --- Seção 4: Tipos de Palavras (Tabela) ---
+        # --- NOVA SEÇÃO 4: ENTIDADES (NER) ---
+        pdf.chapter_title('Entidades Reconhecidas (NER)')
+        entidades = resultado.get('entidades', {})
+        
+        if not entidades:
+            pdf.set_font('Arial', '', 10)
+            pdf.multi_cell(0, 5, "Nenhuma entidade reconhecida no texto.")
+        else:
+            for tipo, lista in sorted(entidades.items()):
+                pdf.set_font('Arial', 'B', 10)
+                # Define a largura da célula do tipo
+                pdf.cell(40, 6, f'{tipo}:', 0, 0)
+                pdf.set_font('Arial', '', 10)
+                # Usa multi_cell para o conteúdo quebrar a linha
+                pdf.multi_cell(0, 6, ", ".join(lista))
+                pdf.ln(2) # Espaço entre os tipos
+        pdf.ln(5)
+        
+        # --- Seção 5: Tipos de Palavras (Tabela) ---
         pdf.chapter_title('Contagem por Tipo de Palavra')
         
         # Cabeçalho da tabela
