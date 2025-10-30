@@ -48,7 +48,13 @@
     </header>
 
     <form method="POST" action="/" enctype="multipart/form-data" id="analysis-form">
-      <textarea name="texto" placeholder="Digite ou cole o texto aqui...">{{ request.form.texto or '' }}</textarea>
+      <textarea name="texto" id="texto-input" placeholder="Digite ou cole o texto aqui...">{{ request.form.texto or '' }}</textarea>
+      
+      <div class="divisor">
+        <span class="ou">ou</span>
+      </div>
+
+      <input type="url" name="url" id="url-input" placeholder="Insira a URL do texto">
       
       <div class="divisor">
         <span class="ou">ou</span>
@@ -71,10 +77,6 @@
         </div>
       {% else %}
         <div class="resultados">
-          
-          <a href="{{ url_for('main.exportar_pdf') }}" class="btn-exportar" target="_blank">
-            <i class="fas fa-file-pdf"></i> Exportar Relatório em PDF
-          </a>
 
           <div class="card card-full">
             <h2><i class="fas fa-chart-bar"></i> Palavras Mais Frequentes</h2>
@@ -137,6 +139,10 @@
             </div>
 
           </div>
+
+          <a href="{{ url_for('main.exportar_pdf') }}" class="btn-exportar" target="_blank">
+            <i class="fas fa-file-pdf"></i> Exportar Relatório em PDF
+          </a>
         </div>
       {% endif %}
     {% endif %}
@@ -163,5 +169,5 @@
   <script src="{{ url_for('static', filename='themeHandler.js') }}"></script>
   <script src="{{ url_for('static', filename='chartsHandler.js') }}"></script>
   
-  </body>
+</body>
 </html>

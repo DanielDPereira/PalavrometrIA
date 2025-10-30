@@ -108,22 +108,33 @@ form {
   flex-direction: column;
 }
 
-textarea {
+/* Estilo unificado para textarea e input de url */
+textarea,
+input[type="url"] {
   width: 100%;
-  height: 160px;
   padding: 15px;
   border: 1px solid var(--cor-borda);
   border-radius: 8px;
   font-size: 1rem;
   font-family: var(--fonte-principal);
-  resize: vertical;
   box-sizing: border-box;
   background-color: var(--cor-container);
   color: var(--cor-texto);
   transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s;
 }
 
-textarea:focus {
+textarea {
+  height: 160px;
+  resize: vertical;
+}
+
+input[type="url"] {
+  height: 50px; /* Altura padrão para um input */
+  resize: none;
+}
+
+textarea:focus,
+input[type="url"]:focus {
   outline: none;
   border-color: var(--cor-primaria);
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
@@ -499,12 +510,11 @@ footer {
   }
 
   .resultados-grid {
-    /* Força uma coluna em telas muito pequenas */
     grid-template-columns: 1fr;
   }
   
   .chart-container {
-    height: 300px; /* Reduz altura do gráfico em mobile */
+    height: 300px;
   }
   
   .theme-toggle-btn {
@@ -515,8 +525,8 @@ footer {
 
 .btn-exportar {
   display: block;
-  width: fit-content; /* Para não ocupar a largura toda */
-  margin: 0 auto 30px auto; /* Centralizado, com margem abaixo */
+  width: fit-content;
+  margin: 0 auto 30px auto;
   background-color: var(--cor-input-fundo);
   color: var(--cor-input-texto);
   border: 1px solid var(--cor-borda);
@@ -526,14 +536,14 @@ footer {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s, border-color 0.2s;
-  text-decoration: none; /* Importante para tags <a> */
+  text-decoration: none;
 }
 
 .btn-exportar:hover {
   background-color: var(--cor-input-fundo-hover);
   border-color: var(--cor-input-borda-hover);
   transform: translateY(-2px);
-  color: var(--cor-input-texto); /* Garante que a cor do texto não mude no hover */
+  color: var(--cor-input-texto);
 }
 
 .btn-exportar .fa-file-pdf {

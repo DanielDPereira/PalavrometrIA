@@ -1,9 +1,10 @@
 import os
 from flask import Blueprint, render_template, request, session, make_response
 from werkzeug.utils import secure_filename
-from fpdf import FPDF # Nova importação
-from datetime import datetime # Nova importação
-
+from fpdf import FPDF 
+from datetime import datetime 
+import requests
+from bs4 import BeautifulSoup
 import fitz  # PyMuPDF
 import docx
 from langdetect import detect
@@ -42,6 +43,8 @@ POS_MAP = {
     "X": "Outro",
     "_": "Desconhecido"
 }
+
+# CLASSE HELPER PARA O PDF (pyfpdf lida com UTF-8)
 class PDF(FPDF):
     def header(self):
         # Arial bold 14
@@ -72,7 +75,6 @@ class PDF(FPDF):
         # multi_cell para o valor, caso quebre a linha
         self.multi_cell(0, 6, str(value)) 
         self.ln(2) # Espaçamento menor após kv
-
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -172,32 +174,68 @@ def frequencia_palavras(doc, top_n=10):
     freq = Counter(palavras)
     return freq.most_common(top_n)
 
-# --- ROTA PRINCIPAL (Modificada) ---
+def extrair_texto_url(url):
+    try:
+        # Adiciona um User-Agent para simular um navegador
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status() # Lança erro para status ruins (4xx, 5xx)
+
+        # Usa BeautifulSoup para extrair o texto de forma limpa
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Remove tags de script e style
+        for script_or_style in soup(["script", "style"]):
+            script_or_style.decompose()
+
+        # Pega o texto do body, remove espaços extras e junta
+        texto = ' '.join(soup.body.stripped_strings)
+        return texto
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Erro ao buscar URL: {e}")
+        raise ValueError(f"Não foi possível acessar a URL. Verifique o link ou a conexão.")
+    except Exception as e:
+        print(f"Erro ao processar HTML: {e}")
+        raise ValueError("Ocorreu um erro ao processar o conteúdo da página.")
+
 @main.route('/', methods=['GET', 'POST'])
 def index():
     resultado = None
     texto = ""
 
-    # Limpa o resultado da sessão em um novo GET
     if request.method == 'GET':
         session.pop('resultado', None)
 
     if request.method == 'POST':
-        session.pop('resultado', None) # Limpa sessão anterior no POST
-
-        if 'texto' in request.form and request.form['texto'].strip():
-            texto = request.form['texto']
-        elif 'arquivo' in request.files:
-            file = request.files['arquivo']
-            if file and allowed_file(file.filename):
-                ext = file.filename.rsplit('.', 1)[1].lower()
-                filename = secure_filename(file.filename)
-                filepath = os.path.join(UPLOAD_FOLDER, filename)
-                file.save(filepath)
-                texto = extrair_texto_arquivo(filepath, ext)
-            else:
-                resultado = {'erro': 'Formato de arquivo inválido.'}
-                return render_template('index.html', resultado=resultado)
+        session.pop('resultado', None)
+        
+        try:
+            if 'texto' in request.form and request.form['texto'].strip():
+                texto = request.form['texto']
+            
+            elif 'url' in request.form and request.form['url'].strip():
+                url = request.form['url']
+                texto = extrair_texto_url(url)
+            
+            # LÓGICA DE ARQUIVO
+            elif 'arquivo' in request.files and request.files['arquivo'].filename != '':
+                file = request.files['arquivo']
+                if file and allowed_file(file.filename):
+                    ext = file.filename.rsplit('.', 1)[1].lower()
+                    filename = secure_filename(file.filename)
+                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    file.save(filepath)
+                    texto = extrair_texto_arquivo(filepath, ext)
+                else:
+                    resultado = {'erro': 'Formato de arquivo inválido.'}
+                    return render_template('index.html', resultado=resultado)
+            
+        except ValueError as e: # Captura erros da extração de URL
+            resultado = {'erro': str(e)}
+            return render_template('index.html', resultado=resultado)
 
         if texto.strip():
             idioma = detectar_idioma(texto)
@@ -227,7 +265,7 @@ def index():
     return render_template('index.html', resultado=resultado)
 
 
-# Exportar PDF
+# ROTA PARA EXPORTAR PDF
 @main.route('/exportar-pdf')
 def exportar_pdf():
     resultado = session.get('resultado')
@@ -298,8 +336,6 @@ def exportar_pdf():
         pdf.ln(5)
 
         # --- Geração da Resposta ---
-        # pyfpdf.output() com dest='S' retorna bytes (se > 2.0.4) ou string.
-        # .encode('latin-1') é o cinto de segurança para compatibilidade
         pdf_data = pdf.output(dest='S').encode('latin-1')
         
         response = make_response(pdf_data)
@@ -309,5 +345,4 @@ def exportar_pdf():
         return response
 
     except Exception as e:
-        # Captura erros, especialmente UnicodeEncodeError se uma fonte errada for usada
         return f"Erro ao gerar PDF: {e}", 500
