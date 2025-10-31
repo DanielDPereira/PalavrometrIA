@@ -4,3 +4,6 @@ textblob
 langdetect
 python-docx
 pymupdf
+beautifulsoup4
+fpdf
+requests
