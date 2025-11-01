@@ -8,7 +8,7 @@ O PalavrometrIA é uma ferramenta web robusta projetada para analisar textos de 
 
 ## Prévia
 
-*imagens*
+<img src="PalavrometrIA GIF.gif">
 
 ## Índice
 
